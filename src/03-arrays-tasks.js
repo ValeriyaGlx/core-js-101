@@ -200,8 +200,8 @@ function getTail(/* arr, n */) {
  *    +'20,21,22,23,24\n'
  *    +'30,31,32,33,34'
  */
-function toCsvText(/* arr */) {
-  throw new Error('Not implemented');
+function toCsvText(arr) {
+  return arr.join('\n');
 }
 
 /**
@@ -234,8 +234,17 @@ function toArrayOfSquares(arr) {
  *   [ 0, 0, 0, 0, 0]         => [ 0, 0, 0, 0, 0]
  *   [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] => [ 1, 3, 6, 10, 15, 21, 28, 36, 45, 55 ]
  */
-function getMovingSum(/* arr */) {
-  throw new Error('Not implemented');
+function getMovingSum(arr) {
+  const res = [];
+  arr.map((el, ind) => {
+    if (ind === 0) {
+      res[ind] = el;
+    } else {
+      res[ind] = el + res[ind - 1];
+    }
+    return res;
+  });
+  return res;
 }
 
 /**
@@ -286,8 +295,9 @@ function propagateItemsByPositionIndex(/* arr */) {
  *   [ 1,2,3,4,5,6,7,8,9,10 ] => [ 10, 9, 8 ]
  *   [ 10, 10, 10, 10 ] => [ 10, 10, 10 ]
  */
-function get3TopItems(/* arr */) {
-  throw new Error('Not implemented');
+function get3TopItems(arr) {
+  const sortArr = arr.sort((a, b) => a - b);
+  return [sortArr.pop(), sortArr.pop(), sortArr.pop()].filter(((el) => el !== undefined));
 }
 
 
@@ -417,8 +427,9 @@ function toStringList(arr) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => (a.city > b.city ? -1 : 1))
+    .sort((a, b) => (a.country > b.country ? 1 : -1));
 }
 
 /**
