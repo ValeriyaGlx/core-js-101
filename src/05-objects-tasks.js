@@ -118,33 +118,129 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+class CssSelector {
+  constructor() {
+    this.selector = '';
+    this.elements = [];
+    this.ids = [];
+    this.pseudoElements = [];
+    this.validation = [];
+  }
+
+  element(value) {
+    if (this.elements.length !== 0) throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    if (this.validation.length !== 0) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element" '
+    + 'if selector parts arranged in an invalid order');
+    }
+    this.selector += value;
+    this.elements.push(value);
+    this.validation.push('el');
+    return this;
+  }
+
+  id(value) {
+    if (this.ids.length !== 0) throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    if (this.validation.includes('class')
+    || this.validation.includes('attr')
+    || this.validation.includes('pseudoClass')
+    || this.validation.includes('pseudoEl')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element" '
+    + 'if selector parts arranged in an invalid order');
+    }
+    this.selector += `#${value}`;
+    this.ids.push(value);
+    this.validation.push('id');
+    return this;
+  }
+
+  class(value) {
+    if (this.validation.includes('attr')
+      || this.validation.includes('pseudoClass')
+      || this.validation.includes('pseudoEl')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element" '
+      + 'if selector parts arranged in an invalid order');
+    }
+    this.selector += `.${value}`;
+    this.validation.push('class');
+    return this;
+  }
+
+  attr(value) {
+    if (this.validation.includes('pseudoClass')
+    || this.validation.includes('pseudoEl')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element" '
+    + 'if selector parts arranged in an invalid order');
+    }
+    this.selector += `[${value}]`;
+    this.validation.push('attr');
+    return this;
+  }
+
+  pseudoClass(value) {
+    if (this.validation.includes('pseudoEl')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element" '
+    + 'if selector parts arranged in an invalid order');
+    }
+    this.selector += `:${value}`;
+    this.validation.push('pseudoClass');
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.pseudoElements.length !== 0) throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    this.selector += `::${value}`;
+    this.pseudoElements.push(value);
+    this.validation.push('pseudoEl');
+    return this;
+  }
+
+  combine(selector1, combinator, selector2) {
+    this.selector += `${selector1} ${combinator} ${selector2}`;
+    return this;
+  }
+
+  stringify() {
+    return this.selector;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+
+  element(value) {
+    return new CssSelector().element(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new CssSelector().id(value);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new CssSelector().class(value);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new CssSelector().attr(value);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new CssSelector().pseudoClass(value);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new CssSelector().pseudoElement(value);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return {
+      selector1,
+      combinator,
+      selector2,
+      stringify() {
+        return `${this.selector1.stringify()} ${combinator} ${this.selector2.stringify()}`;
+      },
+    };
   },
 };
 
