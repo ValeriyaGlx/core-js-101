@@ -136,8 +136,13 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  return (
+    rect1.left < rect2.left + rect2.width
+    && rect1.left + rect1.width > rect2.left
+    && rect1.top < rect2.top + rect2.height
+    && rect1.top + rect1.height > rect2.top
+  );
 }
 
 
@@ -167,8 +172,11 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  const sum = (point.x - circle.center.x) * (point.x - circle.center.x)
+ + (point.y - circle.center.y) * (point.y - circle.center.y);
+  const rad = circle.radius ** 2;
+  return sum < rad;
 }
 
 
@@ -278,8 +286,16 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const digits = String(ccn).split('');
+  for (let i = digits.length - 2; i >= 0; i -= 2) {
+    digits[i] *= 2;
+    if (digits[i] > 9) {
+      digits[i] -= 9;
+    }
+  }
+  const sum = digits.reduce((acc, curr) => acc + Number(curr), 0);
+  return sum % 10 === 0;
 }
 
 /**
@@ -391,8 +407,18 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const component = pathes[0].split('/');
+  let res = '';
+
+  for (let i = 0; i < component.length; i += 1) {
+    const isCommon = pathes.every((el) => el.split('/')[i] === component[i]);
+    if (isCommon) {
+      res += `${component[i]}/`;
+    }
+  }
+
+  return res;
 }
 
 
